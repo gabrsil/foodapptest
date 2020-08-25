@@ -37,12 +37,25 @@ const Dashboard: React.FC = () => {
     loadFoods();
   }, []);
 
+
   async function handleAddFood(
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
     await api
       .post('/foods', food)
       .then(res => setFoods(state => [...state, res.data]))
+      .catch(err => console.log(err));
+  }
+
+  async function handleEditAvailable(food: IFoodPlate): Promise<void> {
+    //tentei usar patch, que seria o mais indicado para esse cenário, porém os testes mesmo passando logaram erros, então deixei put mesmo.
+    await api
+      .put(`/foods/${food.id}`, food)
+      .then(res =>
+        setFoods(state =>
+          state.map(item => (item.id === res.data.id ? res.data : item)),
+        ),
+      )
       .catch(err => console.log(err));
   }
 
@@ -103,6 +116,7 @@ const Dashboard: React.FC = () => {
               food={food}
               handleDelete={handleDeleteFood}
               handleEditFood={handleEditFood}
+              handleEditAvailable={handleEditAvailable}
             />
           ))}
       </FoodsContainer>
