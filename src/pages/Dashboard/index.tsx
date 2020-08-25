@@ -37,12 +37,11 @@ const Dashboard: React.FC = () => {
     loadFoods();
   }, []);
 
-
   async function handleAddFood(
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
     await api
-      .post('/foods', food)
+      .post('/foods', { ...food, available: true })
       .then(res => setFoods(state => [...state, res.data]))
       .catch(err => console.log(err));
   }
@@ -63,7 +62,10 @@ const Dashboard: React.FC = () => {
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
     await api
-      .put(`/foods/${editingFood.id}`, food)
+      .put(`/foods/${editingFood.id}`, {
+        ...food,
+        available: editingFood.available,
+      })
       .then(res => {
         setFoods(state =>
           state.map(item => (item.id === res.data.id ? res.data : item)),
